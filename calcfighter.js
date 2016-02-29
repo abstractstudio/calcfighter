@@ -12,16 +12,18 @@ var players = {"zero": zero, "infinitus": infinitus};
 var platforms;
 
 /* Constants. */
-var XV_ACCELERATION = 0.1;
-var XV_TERMINAL = 0.5;
+var XV_ACCELERATION = 0.085;
+var XV_TERMINAL = 0.6;
 var XV_FRICTION = 0.05;
 var YV_GRAVITY = 0.05;
-var YV_TERMINAL = 0.5;
-var JUMP = 1;
+var YV_TERMINAL = 0.20;
+var JUMP = 1.0;
 var JUMP_MAX = 2;
 var JUMP_COOLDOWN = 400;
 
 var SNAP_TO_EDGE = 2;
+
+var PLATFORM_THICKNESS = 3;
 
 /* Useful. */
 var X = 0; var Y = 1;
@@ -76,7 +78,9 @@ function setup() {
     
     /* Platforms. */
     platforms = [
-        [(canvas.width - 600)/2, canvas.height * 13/20, 600, 4]
+        [(canvas.width - 400)/2, canvas.height * 13/20, 400, PLATFORM_THICKNESS], 
+		[(canvas.width - 650)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS], 
+		[(canvas.width + 350)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS]
     ];
     
     /* Start the game. */
@@ -117,7 +121,7 @@ function reset() {
         character: "\u221E",
         name: "infinitus",
 
-        x: 800, 
+        x: 600, 
         y: 50,
         xv: 0,
         yv: 0,
@@ -129,8 +133,8 @@ function reset() {
         
         score: 0,
         
-        bbox: function() { return [infinitus.x+2, infinitus.y+7, 33, 19]; },
-        cbox: function() { return [infinitus.x+2, infinitus.y+7, infinitus.x+33, infinitus.y+19]; },
+        bbox: function() { return [infinitus.x, infinitus.y, 33, 19]; },
+        cbox: function() { return [infinitus.x, infinitus.y, infinitus.x+33, infinitus.y+19]; },
         
         leftKey: 37,
         rightKey: 39,
@@ -197,13 +201,14 @@ function update(delta) {
 
         var dbox = [pcbox[0], pcbox[1], cbox[2]-pcbox[0], cbox[3]-pcbox[1]]; 
         
+		player.grounded = false;
         for (var i = 0; i < platforms.length; i++) {
             
             var platform = platforms[i];
 
             /* Check if colliding with platform. */
             if (player.yv > 0 && intersects(dbox, platform)) {
-                
+                console.log(player.platforms[i]);
                 /* Check if close enough to snap up to platform. */
                 if (player.platforms[i] === false) {
                     player.y = platform[Y] - bbox[H];
@@ -211,12 +216,11 @@ function update(delta) {
                     player.grounded = true;
                     player.jumpState = 0;
                     player.platforms[i] = true;
+					
                 }
                 
             } else {
-                
                 /* Otherwise, the player is ungrounded. */
-                player.grounded = false;
                 player.platforms[i] = false;
 
             }
@@ -226,7 +230,7 @@ function update(delta) {
         if (cbox[X1] < 0) player.x = 0;
         else if (cbox[X2] > canvas.width) player.x = canvas.width - bbox[W];
         if (cbox[Y1] < 0) player.y = 0;
-        else if (player.y + bbox[H] > canvas.height + 50) die(player);
+        else if (player.y + bbox[H] > canvas.height + 150) die(player);
         
     }
     
@@ -266,10 +270,10 @@ function render() {
     context.fillStyle = "black";
     context.font = "36px Verdana";
     bbox = zero.bbox();
-	context.strokeRect(bbox[0], bbox[1], bbox[2], bbox[3]);
-    context.fillText(zero.character, zero.x, zero.y);
+	//context.strokeRect(bbox[0], bbox[1], bbox[2], bbox[3]);
+    context.fillText(zero.character, zero.x - 1, zero.y - 7);
 	bbox = infinitus.bbox();
-	context.strokeRect(bbox[0], bbox[1], bbox[2], bbox[3]);
-    context.fillText(infinitus.character, infinitus.x, infinitus.y);
+	//context.strokeRect(bbox[0], bbox[1], bbox[2], bbox[3]);
+    context.fillText(infinitus.character, infinitus.x - 2, infinitus.y - 14);
     
 }
