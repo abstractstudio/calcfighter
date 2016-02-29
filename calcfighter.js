@@ -12,12 +12,12 @@ var players = {"zero": zero, "infinitus": infinitus};
 var platforms;
 
 /* Constants. */
-var XV_ACCELERATION = 0.01;
-var XV_TERMINAL = 0.1;
-var XV_FRICTION = 0.1;
-var YV_GRAVITY = 0.45;
+var XV_ACCELERATION = 0.1;
+var XV_TERMINAL = 0.5;
+var XV_FRICTION = 0.05;
+var YV_GRAVITY = 0.05;
 var YV_TERMINAL = 0.5;
-var JUMP = 10;
+var JUMP = 1;
 var JUMP_MAX = 2;
 var JUMP_COOLDOWN = 400;
 
@@ -63,7 +63,7 @@ function setup() {
     
     /* Set up tick rate. */
     now = Date.now();
-    delta = now - then;    
+    then = Date.now();    
     
     /* Keyboard input. */
     keys = {};
@@ -97,9 +97,10 @@ function reset() {
         xv: 0,
         yv: 0,
         
-        grounded: false, 
-		jumpState: 0, 
-		jumpTime: 0, 
+        grounded: false,
+        platforms: [], 
+        jumpState: 0, 
+        jumpTime: 0, 
         
         score: 0,
         
@@ -121,9 +122,10 @@ function reset() {
         xv: 0,
         yv: 0,
         
-        grounded: false, 
-		jumpState: 0, 
-		jumpTime: 0, 
+        grounded: false,
+        platforms: [], 
+        jumpState: 0, 
+        jumpTime: 0, 
         
         score: 0,
         
@@ -139,20 +141,29 @@ function reset() {
     players["zero"] = zero;
     players["infinitus"] = infinitus;
     
+    for (var i = 0; i < platforms.length; i++) {
+        zero.platforms[i] = false;
+        infinitus.platforms[i] = false;
+    }
+
 }
 
 function update(delta) {
     
     /* Update the players individually. */
     for (var name in players) {
-        
+
         /* Obtain the player. */
         var player = players[name];
                 
         /* Strafing. */
         if (player.leftKey in keys) player.xv -= XV_ACCELERATION;
         if (player.rightKey in keys) player.xv += XV_ACCELERATION;
-        if (Math.abs(player.xv) > XV_TERMINAL) player.xv = (player.xv > 0 ? 1 : -1) * XV_TERMINAL;
+        
+        /* Drag and terminal velocity. */
+        var sign = player.xv > 0 ? 1 : -1;
+        player.xv = sign * Math.max(Math.abs(player.xv) - XV_FRICTION, 0);
+        if (Math.abs(player.xv) > XV_TERMINAL) player.xv = sign * XV_TERMINAL;
         
         /* Jumping. */
         if (player.jumpState < JUMP_MAX && Date.now() - player.jumpTime > JUMP_COOLDOWN && player.upKey in keys) {
@@ -162,43 +173,52 @@ function update(delta) {
             player.yv = -JUMP;
         }
         
-        if (!zero.grounded) {
+        if (!player.grounded) {
             player.yv += YV_GRAVITY;
         } else {
             player.yv = 0;
             player.jumpState = 0;
         }
-        
-        if (Math.abs(player.yv) > YV_TERMINAL) (player.yv > 0 ? 1 : -1) * YV_TERMINAL;
-        
+
+        if (Math.abs(player.yv) > YV_TERMINAL) {
+            //console.log("capped yv");
+            (player.yv > 0 ? 1 : -1) * YV_TERMINAL;
+        }        
+
+        var pcbox = player.cbox();
+
         /* Actually move. */
-        console.log(player.x, player.y, player.xv, player.yv);
         player.x += player.xv * delta;
         player.y += player.yv * delta;
         
         /* Collisions. */
         var bbox = player.bbox();
         var cbox = player.cbox();
+
+        var dbox = [pcbox[0], pcbox[1], cbox[2]-pcbox[0], cbox[3]-pcbox[1]]; 
         
-        console.log(X1);
-        console.log(bbox);
-        
-        for (var platform in platforms) {
+        for (var i = 0; i < platforms.length; i++) {
             
+            var platform = platforms[i];
+
             /* Check if colliding with platform. */
-            if (player.yv > 0 && intersects(bbox, platform)) {
+            if (player.yv > 0 && intersects(dbox, platform)) {
                 
                 /* Check if close enough to snap up to platform. */
-                if (Math.abs(platform[Y] - cbox[Y2]) < SNAP_TO_EDGE) player.y = platform[Y] - bbox[Y2];
-                player.yv = 0;
-                player.grounded = true;
-                player.jumpState = 0;
+                if (player.platforms[i] === false) {
+                    player.y = platform[Y] - bbox[H];
+                    player.yv = 0;
+                    player.grounded = true;
+                    player.jumpState = 0;
+                    player.platforms[i] = true;
+                }
                 
             } else {
                 
                 /* Otherwise, the player is ungrounded. */
                 player.grounded = false;
-                
+                player.platforms[i] = false;
+
             }
         }
         
@@ -206,7 +226,7 @@ function update(delta) {
         if (cbox[X1] < 0) player.x = 0;
         else if (cbox[X2] > canvas.width) player.x = canvas.width - bbox[W];
         if (cbox[Y1] < 0) player.y = 0;
-        else if (player.y + bbox[H] > canvas.height) die(player);
+        else if (player.y + bbox[H] > canvas.height + 50) die(player);
         
     }
     
