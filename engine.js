@@ -17,6 +17,10 @@ var S = 0;
 
 // Input
 var keys = {};
+var keymap = [
+	{left: 65, right: 68, up: 87, down: 83, shoot: 49, shield: 192},
+	{left: 37, right: 39, up: 38, down: 40, shoot: 220, shield: 221}
+];
 
 // Animation
 var w = window;
@@ -50,8 +54,8 @@ function Engine(canvas) {
     ];
     this.bullets = [];
     this.players = {
-        zero: new Player("zero", "zero.png", {left: 65, right: 68, up: 87, down: 83, shoot: 49}, this),
-        infinitus: new Player("infinitus", "infinity.png", {left: 37, right: 39, up: 38, down: 40, shoot: 220}, this)
+        zero: new Player("zero", "zero.png", keymap[0], this),
+        infinitus: new Player("infinitus", "infinity.png", keymap[1], this)
     };
                 
     // Update the game.
@@ -149,10 +153,14 @@ function Engine(canvas) {
         this.context.textAlign = "left";
         this.context.textBaseline = "top";
         this.context.fillText(Math.round(F/(Date.now() - S) * 100000) / 100, 10, 10);
+        
+        this.context.fillRect(10, this.canvas.height-40, 0.1*this.players.zero.shield, 3);
         this.context.textBaseline = "bottom"
-        this.context.fillText("Zero: " + this.players.zero.score, 10, canvas.height-10);
+        this.context.fillText("Zero: " + this.players.zero.score, 10, this.canvas.height-10);
+
+        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.1*this.players.infinitus.shield, 3);
         this.context.textAlign = "right";
-        this.context.fillText("Infinity: " + this.players.infinitus.score, canvas.width-10, canvas.height-10);
+        this.context.fillText("Infinity: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
 
     }
         

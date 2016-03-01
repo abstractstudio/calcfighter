@@ -1,6 +1,7 @@
 var MAX_BULLETS = 2;
 var BULLET_COOLDOWN = 200;
 var INVINCIBILITY_TIME = 2000;
+var SHIELD_TIME = 2000;
 
 // Player data and computation model.
 function Player(name, image, bindings, engine) {
@@ -14,6 +15,8 @@ function Player(name, image, bindings, engine) {
     this.ready = false;
     this.image.onload = function() { this.ready = true; }
     this.image.src = image;
+    
+    this.shielded = false;
     
     // Position and physics.
     this.x = 100;
@@ -30,6 +33,7 @@ function Player(name, image, bindings, engine) {
     // Bullets.
     this.bullet = 2;
     this.bulletTime = 0;
+    this.shield = SHIELD_TIME;
     
     // Scoring.
     this.score = 0;
@@ -92,13 +96,26 @@ function Player(name, image, bindings, engine) {
             this.engine.bullets.push(new Bullet(this));
             this.deathTime = 0;
         }
+        
+        // Shields after user presses key.
+        if (this.shield > 0 && this.bindings.shield in keys) {
+			if (this.shielded) {
+				this.shield -= delta;
+			} else {
+        		this.shielded = true;
+        	}
+        } else {
+        	this.shielded = false;
+        }
     }
     
     this.render = function(context) {
         
         // Draw the image.
-        if (this.invincible() && Date.now() % 500 < 150) return;
-        context.drawImage(this.image, this.x, this.y);  
+        if (Date.now() - this.deathTime < INVINCIBILITY_TIME && Date.now() % 500 < 150) return;
+        context.drawImage(this.image, this.x, this.y);
+        
+        // TODO: Draw triangle
         
     }
 
@@ -110,6 +127,9 @@ function Player(name, image, bindings, engine) {
         // Set physics.
         this.y = 0;
         this.yv = 0;
+        
+        // Reload shield.
+        this.shield = SHIELD_TIME;
 
         // Spawn randomly.
         this.x = Math.random() * this.engine.canvas.width;
@@ -119,7 +139,7 @@ function Player(name, image, bindings, engine) {
     this.invincible = function() {
 
         // Assert the death time is within the invincibility.       
-        return (Date.now() - this.deathTime < INVINCIBILITY_TIME);
+        return Date.now() - this.deathTime < INVINCIBILITY_TIME || this.shielded;
 
     }
  
