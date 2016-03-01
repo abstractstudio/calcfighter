@@ -1,5 +1,3 @@
-PLATFORM_THICKNESS = 4;
-
 function Platform(x, y, w, h) {
     
     // Record the dimensions.

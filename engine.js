@@ -4,10 +4,22 @@ var XV_TERMINAL = 0.6;
 var XV_FRICTION = 0.05;
 var YV_GRAVITY = 0.05;
 var YV_TERMINAL = 100;
+var XV_BULLET = 0.75;
+
+// Jumping physics constants
 var JUMP = 0.9;
 var JUMP_MAX = 2;
 var JUMP_COOLDOWN = 400;
 var CLIP_THRESHOLD = 2;
+
+// Player constants
+var MAX_BULLETS = 2;
+var BULLET_COOLDOWN = 200;
+var INVINCIBILITY_TIME = 2000;
+var SHIELD_TIME = 2000;
+
+// Platform constants.
+PLATFORM_THICKNESS = 4;
 
 // Animation limits.
 var FPS_CAP = 100;
@@ -15,12 +27,32 @@ var FPS_INTERVAL = 1000 / FPS_CAP;
 var F = 0;
 var S = 0;
 
-// Input
+// Input.
 var keys = {};
 var keymap = [
 	{left: 65, right: 68, up: 87, down: 83, shoot: 49, shield: 192},
 	{left: 37, right: 39, up: 38, down: 40, shoot: 220, shield: 221}
 ];
+var arrows = [37, 39, 38, 40];
+
+// Sprites.
+var spritesPaths = {zero: "images/zero.png", infinity: "images/infinity.png", ddx: "images/ddx.png", intsmall: "images/intsmall.png", intlarge: "images/intlarge.png"}
+var spritesReady = {}
+var sprites = {};
+
+for (var key in spritesPaths) {
+    spritesReady[key] = false;
+    
+    var image = new Image();
+    image.key = key;
+    image.onload = function() { spritesReady[this.key] = true; }
+    image.src = spritesPaths[key];
+    
+    sprites[key] = image;
+}
+
+var ready = false;
+
 
 // Animation
 var w = window;
@@ -43,7 +75,10 @@ function Engine(canvas) {
     this.time = Date.now();
 
     // Input binding.
-    addEventListener("keydown", function(e) { keys[e.keyCode] = true; }, false);
+    addEventListener("keydown", function(e) { 
+        keys[e.keyCode] = true; 
+        if ([37, 39, 38, 40].indexOf(e.keyCode) > -1) e.preventDefault();
+    }, false);
     addEventListener("keyup", function(e) { delete keys[e.keyCode]; }, false);
 
     // Game objects.
@@ -54,8 +89,8 @@ function Engine(canvas) {
     ];
     this.bullets = [];
     this.players = {
-        zero: new Player("zero", "zero.png", keymap[0], this),
-        infinitus: new Player("infinitus", "infinity.png", keymap[1], this)
+        zero: new Player("zero", sprites.zero, sprites.intlarge, keymap[0], this),
+        infinitus: new Player("infinitus", sprites.infinity, sprites.intsmall, keymap[1], this)
     };
                 
     // Update the game.
@@ -69,8 +104,7 @@ function Engine(canvas) {
             
             // Check if a bullet has died.
             if (bullet.x+bullet.image.width < 0 || bullet.x > canvas.width) {
-                this.bullets.splice(i, 1);
-                bullet.player.bullet++;
+                this.dieBullet(i);
             }
         }
         
@@ -110,8 +144,11 @@ function Engine(canvas) {
                 var bullet = this.bullets[i];
                 
                 // Intersection with bullet.
-                if (!player.invincible() && intersects(bbox, bullet.bbox())) {
+                if (!player.invincible() && !player.shielded && intersects(bbox, bullet.bbox())) {
                     this.die(player);
+                    this.dieBullet(i);
+                } else if (player.shielded && intersects(bbox, bullet.bbox())) {
+                    this.dieBullet(i);
                 }
                 
             }
@@ -128,6 +165,13 @@ function Engine(canvas) {
     
     // Draw the game to the canvas. 
     this.render = function() {
+        
+        // Check if reasources are ready.
+        if (!ready) {
+            ready = true;
+            for (var key in spritesReady) ready &= spritesReady[key];
+            return;
+        }
         
         // Redraw the background.
         this.context.fillStyle = "#CCC";
@@ -150,15 +194,17 @@ function Engine(canvas) {
         }
         
         // Draw frames per second.
+        this.context.fillStyle = "#AAA";
+        
         this.context.textAlign = "left";
         this.context.textBaseline = "top";
         this.context.fillText(Math.round(F/(Date.now() - S) * 100000) / 100, 10, 10);
         
-        this.context.fillRect(10, this.canvas.height-40, 0.1*this.players.zero.shield, 3);
+        this.context.fillRect(10, this.canvas.height-40, 0.075*this.players.zero.shield, 3);
         this.context.textBaseline = "bottom"
         this.context.fillText("Zero: " + this.players.zero.score, 10, this.canvas.height-10);
 
-        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.1*this.players.infinitus.shield, 3);
+        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.075*this.players.infinitus.shield, 3);
         this.context.textAlign = "right";
         this.context.fillText("Infinity: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
 
@@ -197,7 +243,6 @@ function Engine(canvas) {
         if (player.name == "zero") this.players.infinitus.score++;
         else if (player.name == "infinitus") this.players.zero.score++;
         player.die();
-        console.log("DIE");
         
     }
     
@@ -205,6 +250,12 @@ function Engine(canvas) {
     this.start = function() {
         S = Date.now();
         this.main(); 
+    }
+    
+    // Kill a bullet.
+    this.dieBullet = function(index) {
+        this.bullets[index].player.bullet++;
+        this.bullets.splice(index, 1);
     }
     
 }

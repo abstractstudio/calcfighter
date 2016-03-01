@@ -1,18 +1,13 @@
-var XV_BULLET = 0.75;
-
 function Bullet(player) {
+    
+    // Sprite.
+    this.image = sprites.ddx;
     
     // Core information.
     this.x = player.x;
-    this.y = player.y;
+    this.y = player.y + player.image.height / 2 - this.image.height / 2;
     this.direction = player.direction;
     this.player = player;
-    
-    // Sprite.
-    this.image = new Image();
-    this.ready = false;
-    this.image.onload = function() { this.ready = true; }
-    this.image.src = "ddx.png";
     
     if (this.direction == -1) this.x -= this.image.width + 1;
     else this.x += this.player.image.width;

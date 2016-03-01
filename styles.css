@@ -1,11 +1,11 @@
 body {
     width: 800px;
-    margin: auto;
-	margin-top: 4em;
+    margin: 4em auto;
     
     text-align: center;
     line-height: 125%;
     font-family: Verdana;
+    font-size: 16px;
 }
 
 canvas {
@@ -17,4 +17,32 @@ canvas {
     margin-top: 3em;
     margin-left: 3em;
     margin-right: 3em;
+}
+
+#information {
+    margin-top: 7em;
+    text-align: left;
+}
+
+#information h2 {
+    margin-bottom: 0em;
+    padding-bottom: 0em;
+}
+
+#information ul {
+    margin-top: 0.5em;
+}
+
+.column1, .column2 {
+    width: 50%;
+    display: block;
+    float: left;
+}
+
+.column1 {
+    text-align: right;
+}
+
+.clear {
+    clear: both;
 }
