@@ -1,5 +1,11 @@
+var MAX_BULLETS = 2;
+var BULLET_COOLDOWN = 200;
+
 // Player data and computation model.
-function Player(name, image, bindings) {
+function Player(name, image, bindings, engine) {
+    
+    // Engine.
+    this.engine = engine;
     
     // Character info.
     this.name = name;
@@ -17,6 +23,11 @@ function Player(name, image, bindings) {
     this.jumpTime = 0;
     this.grounded = false;
     this.collisions = {};
+    this.direction = -1;
+    
+    // Bullets.
+    this.bullet = 2;
+    this.bulletTime = 0;
     
     // Scoring.
     this.score = 0;
@@ -33,8 +44,14 @@ function Player(name, image, bindings) {
     this.update = function(delta) {
         
         // Strafing.
-        if (this.bindings.left in keys) this.xv -= XV_ACCELERATION;
-        if (this.bindings.right in keys) this.xv += XV_ACCELERATION;
+        if (this.bindings.left in keys) {
+            this.xv -= XV_ACCELERATION;
+            this.direction = -1;
+        }
+        if (this.bindings.right in keys) {
+            this.xv += XV_ACCELERATION;
+            this.direction = 1;
+        }
         
         // X drag and terminal velocity.
         var sign = this.xv > 0 ? 1 : -1;
@@ -66,7 +83,12 @@ function Player(name, image, bindings) {
         this.x += this.xv * delta;
         this.y += this.yv * delta;
         
-        //console.log(keys);
+        // Shooting.
+        if (this.bullet > 0 && Date.now() - this.bulletTime > BULLET_COOLDOWN && this.bindings.shoot in keys) {
+            this.bullet--;
+            this.bulletTime = Date.now();
+            this.engine.bullets.push(new Bullet(this));
+        }
     }
     
     this.render = function(context) {

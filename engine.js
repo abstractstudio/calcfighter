@@ -33,9 +33,7 @@ function Engine(canvas) {
     // Graphics.
     this.canvas = canvas;
     this.context = canvas.getContext("2d");
-    
     this.context.font = "20px Verdana";
-    this.context.textBaseline = "hanging";
 
     // Set up timing.
     this.time = Date.now();
@@ -52,8 +50,8 @@ function Engine(canvas) {
     ];
     this.bullets = [];
     this.players = {
-        zero: new Player("zero", "zero.png", {left: 65, right: 68, up: 87, down: 83}),
-        infinitus: new Player("infinitus", "infinity.png", {left: 37, right: 39, up: 38, down: 40})
+        zero: new Player("zero", "zero.png", {left: 65, right: 68, up: 87, down: 83, shoot: 49}, this),
+        infinitus: new Player("infinitus", "infinity.png", {left: 37, right: 39, up: 38, down: 40, shoot: 220}, this)
     };
                 
     // Update the game.
@@ -61,7 +59,16 @@ function Engine(canvas) {
  
         // Update the players
         for (var name in this.players) this.players[name].update(delta);
-        for (var i = 0; i < this.bullets.length; i++) this.bullets[i].update(delta);
+        for (var i = 0; i < this.bullets.length; i++) {
+            var bullet = this.bullets[i];
+            bullet.update(delta);
+            
+            // Check if a bullet has died.
+            if (bullet.x+bullet.image.width < 0 || bullet.x > canvas.width) {
+                this.bullets.splice(i, 1);
+                bullet.player.bullet++;
+            }
+        }
         
         // Collision detection
         for (var name in this.players) {
@@ -89,6 +96,18 @@ function Engine(canvas) {
                     player.collisions[i] = true;
                 } else {
                     delete player.collisions[i];
+                }
+                
+            }
+            
+            for (var i = 0; i < this.bullets.length; i++) {
+                
+                // Access the bullet.
+                var bullet = this.bullets[i];
+                
+                // Intersection with bullet.
+                if (intersects(bbox, bullet.bbox())) {
+                    this.die(player);
                 }
                 
             }
@@ -121,9 +140,19 @@ function Engine(canvas) {
             this.players[name].render(this.context);
         }
         
-        // Draw frames per second.
-        this.context.fillText(Math.round(F/(Date.now() - S) * 100000) / 100, 10, 10);
+        // Draw the bullets.
+        for (var i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].render(this.context);
+        }
         
+        // Draw frames per second.
+        this.context.textAlign = "left";
+        this.context.textBaseline = "top";
+        this.context.fillText(Math.round(F/(Date.now() - S) * 100000) / 100, 10, 10);
+        this.context.textBaseline = "bottom"
+        this.context.fillText("Zero: " + this.players.zero.score, 10, canvas.height-10);
+        this.context.textAlign = "right";
+        this.context.fillText("Infinity: " + this.players.infinitus.score, canvas.width-10, canvas.height-10);
     }
         
     // The main game loop.
