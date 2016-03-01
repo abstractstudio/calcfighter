@@ -1,22 +1,13 @@
-var MAX_BULLETS = 2;
-var BULLET_COOLDOWN = 200;
-var INVINCIBILITY_TIME = 2000;
-var SHIELD_TIME = 2000;
-
 // Player data and computation model.
-function Player(name, image, bindings, engine) {
+function Player(name, image, intimage, bindings, engine) {
     
     // Engine.
     this.engine = engine;
     
     // Character info.
     this.name = name;
-    this.image = new Image();
-    this.ready = false;
-    this.image.onload = function() { this.ready = true; }
-    this.image.src = image;
-    
-    this.shielded = false;
+    this.image = image;
+    this.integral = intimage;
     
     // Position and physics.
     this.x = 100;
@@ -30,11 +21,12 @@ function Player(name, image, bindings, engine) {
     this.direction = -1;
     this.deathTime = 0;
     
-    // Bullets.
+    // Bullets and shield.
     this.bullet = 2;
     this.bulletTime = 0;
     this.shield = SHIELD_TIME;
-    
+    this.shielded = false;
+
     // Scoring.
     this.score = 0;
     
@@ -90,7 +82,7 @@ function Player(name, image, bindings, engine) {
         this.y += this.yv * delta;
         
         // Shooting.
-        if (this.bullet > 0 && Date.now() - this.bulletTime > BULLET_COOLDOWN && this.bindings.shoot in keys) {
+        if (this.bullet > 0 && Date.now() - this.bulletTime > BULLET_COOLDOWN && this.bindings.shoot in keys && !this.shielded) {
             this.bullet--;
             this.bulletTime = Date.now();
             this.engine.bullets.push(new Bullet(this));
@@ -98,7 +90,7 @@ function Player(name, image, bindings, engine) {
         }
         
         // Shields after user presses key.
-        if (this.shield > 0 && this.bindings.shield in keys) {
+        if (this.shield > 0 && this.bindings.shield in keys && !this.invincible()) {
 			if (this.shielded) {
 				this.shield -= delta;
 			} else {
@@ -107,15 +99,33 @@ function Player(name, image, bindings, engine) {
         } else {
         	this.shielded = false;
         }
+            
+        // Make sure the shield is at a sensible value.
+        this.shield = Math.max(this.shield, 0)
+    
     }
     
     this.render = function(context) {
         
         // Draw the image.
-        if (Date.now() - this.deathTime < INVINCIBILITY_TIME && Date.now() % 500 < 150) return;
+        if (this.invincible() && Date.now() % 500 < 150) return;
         context.drawImage(this.image, this.x, this.y);
+        if (this.shielded) {
+            context.drawImage(this.integral, this.x - this.integral.width, this.y + this.image.height / 2 - this.integral.height / 2);
+            context.drawImage(this.integral, this.x + this.image.width, this.y + this.image.height / 2 - this.integral.height / 2);
+        }
         
-        // TODO: Draw triangle
+        if (!this.shielded) {
+            context.beginPath();
+            
+            var cx = this.x + (this.direction == -1 ? -5 : this.image.width + 5);
+            var cy = this.y + this.image.height / 2;
+            
+            context.moveTo(cx, cy+3);
+            context.lineTo(cx+this.direction*6, cy);
+            context.lineTo(cx, cy-3);
+            context.fill();
+        }
         
     }
 
@@ -139,7 +149,7 @@ function Player(name, image, bindings, engine) {
     this.invincible = function() {
 
         // Assert the death time is within the invincibility.       
-        return Date.now() - this.deathTime < INVINCIBILITY_TIME || this.shielded;
+        return Date.now() - this.deathTime < INVINCIBILITY_TIME;
 
     }
  
