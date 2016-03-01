@@ -1,5 +1,6 @@
 var MAX_BULLETS = 2;
 var BULLET_COOLDOWN = 200;
+var INVINCIBILITY_TIME = 2000;
 
 // Player data and computation model.
 function Player(name, image, bindings, engine) {
@@ -24,6 +25,7 @@ function Player(name, image, bindings, engine) {
     this.grounded = false;
     this.collisions = {};
     this.direction = -1;
+    this.deathTime = 0;
     
     // Bullets.
     this.bullet = 2;
@@ -88,14 +90,37 @@ function Player(name, image, bindings, engine) {
             this.bullet--;
             this.bulletTime = Date.now();
             this.engine.bullets.push(new Bullet(this));
+            this.deathTime = 0;
         }
     }
     
     this.render = function(context) {
         
         // Draw the image.
+        if (this.invincible() && Date.now() % 500 < 150) return;
         context.drawImage(this.image, this.x, this.y);  
         
     }
-    
+
+    this.die = function() {
+        
+        // Time of death.
+        this.deathTime = Date.now();
+        
+        // Set physics.
+        this.y = 0;
+        this.yv = 0;
+
+        // Spawn randomly.
+        this.x = Math.random() * this.engine.canvas.width;
+
+    }
+
+    this.invincible = function() {
+
+        // Assert the death time is within the invincibility.       
+        return (Date.now() - this.deathTime < INVINCIBILITY_TIME);
+
+    }
+ 
 }

@@ -14,8 +14,9 @@ function Bullet(player) {
     this.image.onload = function() { this.ready = true; }
     this.image.src = "ddx.png";
     
-    this.x += this.direction * this.image.width;
-    
+    if (this.direction == -1) this.x -= this.image.width + 1;
+    else this.x += this.player.image.width;
+
     // Update.
     this.update = function(delta) {
         

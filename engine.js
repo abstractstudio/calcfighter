@@ -24,7 +24,7 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 
 // Rectangular intersection.
 function intersects(r1, r2) {
-	return !(r1[0]+r1[2] < r2[0] || r1[0] > r2[0]+r2[2] || r1[1]+r1[3] < r2[1] || r1[1] > r2[1]+r2[3]);
+    return !(r1[0]+r1[2] < r2[0] || r1[0] > r2[0]+r2[2] || r1[1]+r1[3] < r2[1] || r1[1] > r2[1]+r2[3]);
 }
 
 // The main game engine class.
@@ -106,7 +106,7 @@ function Engine(canvas) {
                 var bullet = this.bullets[i];
                 
                 // Intersection with bullet.
-                if (intersects(bbox, bullet.bbox())) {
+                if (!player.invincible() && intersects(bbox, bullet.bbox())) {
                     this.die(player);
                 }
                 
@@ -153,6 +153,7 @@ function Engine(canvas) {
         this.context.fillText("Zero: " + this.players.zero.score, 10, canvas.height-10);
         this.context.textAlign = "right";
         this.context.fillText("Infinity: " + this.players.infinitus.score, canvas.width-10, canvas.height-10);
+
     }
         
     // The main game loop.
@@ -187,8 +188,7 @@ function Engine(canvas) {
         // Move the player and update score.
         if (player.name == "zero") this.players.infinitus.score++;
         else if (player.name == "infinitus") this.players.zero.score++;
-        player.y = 0;
-        player.yv = 0;
+        player.die();
         console.log("DIE");
         
     }
