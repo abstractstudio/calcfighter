@@ -16,6 +16,11 @@ function Particle(image, player, engine) {
     this.angle = Math.random() * 2 * Math.PI
     this.xv = Math.cos(this.angle) * XV_PARTICLE;
     this.yv = Math.sin(this.angle) * YV_PARTICLE;
+
+    if (this.player.y > this.engine.canvas.height) {
+        this.yv = -Math.abs(this.yv);
+        this.y = this.engine.canvas.height + 10;
+    }
 	
     // Update the particles physics and remove if necessary.
     this.update = function(delta) {

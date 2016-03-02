@@ -9,9 +9,9 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
     this.image = image;
     this.integral = intimage;
 	
-	// Particles.
-	this.particleImages = particleImages;
-	this.particles = [];
+    // Particles.
+    this.particleImages = particleImages;
+    this.particles = [];
     
     // Position and physics.
     this.x = 0;
@@ -20,7 +20,7 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
     this.yv = 0;
     this.jump = 0;
     this.jumpTime = 0;
-	this.movedDown = false;
+    this.movedDown = false;
     this.grounded = false;
     this.collisions = {};
     this.direction = -1;
@@ -147,9 +147,9 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         // Time of death.
         this.deathTime = Date.now();
 		
-		// Spawn particles.
+        // Spawn particles.
         this.particles = [];
-		for (var i = 0; i < 10; i++) this.particles.push(new Particle(particleImages[i], this, this.engine));
+        for (var i = 0; i < 10; i++) this.particles.push(new Particle(particleImages[i], this, this.engine));
         
         // Set physics.
         this.y = 0;

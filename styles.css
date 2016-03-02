@@ -33,4 +33,5 @@ canvas {
 table { border: 0px; width: 100%; }
 
 .column1 table { float: right; text-align: right; }
-.column1 table td:last-of-type, .column2 table td:first-of-type { width: 1.5em; }
+.column1 table td:last-of-type, .column2 table td:first-of-type { width: 1.5em; font-weight: bold; }
+
