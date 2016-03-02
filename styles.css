@@ -4,7 +4,7 @@ body {
     
     text-align: center;
     line-height: 125%;
-    font-family: Verdana;
+    font-family: Open Sans, sans-serif;
     font-size: 16px;
 }
 
@@ -13,36 +13,22 @@ canvas {
     background-color: #CCC;
 }
 
-#description {
+#description, #information {
     margin-top: 3em;
     margin-left: 3em;
     margin-right: 3em;
-}
-
-#information {
-    margin-top: 7em;
-    text-align: left;
-}
-
-#information h2 {
-    margin-bottom: 0em;
-    padding-bottom: 0em;
 }
 
 #information ul {
     margin-top: 0.5em;
 }
 
-.column1, .column2 {
-    width: 50%;
-    display: block;
-    float: left;
-}
+.column1, .column2 { width: 48%; display: block; }
+.column1 { text-align: right; float: left; }
+.column2 { text-align: left; float: right; }
+.clear { clear: both; padding-top: 1em; }
 
-.column1 {
-    text-align: right;
-}
+table { border: 0px; }
 
-.clear {
-    clear: both;
-}
+.column1 table { float: right; text-align: right; }
+.column1 table td:last-of-type, .column2 table td:first-of-type { width: 1.5em; }

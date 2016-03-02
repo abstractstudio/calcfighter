@@ -27,6 +27,8 @@ var FPS_INTERVAL = 1000 / FPS_CAP;
 var F = 0;
 var S = 0;
 
+window.onfocus = function() { F = 0; S = Date.now() ; }
+
 // Input.
 var keys = {};
 var keymap = [
@@ -198,7 +200,7 @@ function Engine(canvas) {
         
         this.context.textAlign = "left";
         this.context.textBaseline = "top";
-        this.context.fillText(Math.round(F/(Date.now() - S) * 100000) / 100, 10, 10);
+        this.context.fillText(Math.round(F/(Date.now() - S) * 1000), 10, 10);
         
         this.context.fillRect(10, this.canvas.height-40, 0.075*this.players.zero.shield, 3);
         this.context.textBaseline = "bottom"
