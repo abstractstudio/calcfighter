@@ -26,7 +26,7 @@ function Particle(index, image, player, engine) {
 	
 	this.render = function(context) {
 		if (this.active) {
-			context.drawImage(this.image, this.x, this.y);
+			this.engine.context.drawImage(this.image, this.x, this.y);
 		}
 	}
 }

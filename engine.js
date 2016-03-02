@@ -65,13 +65,9 @@ for (var i = 0; i < particlePaths.length; i++) {
     image.src = particlePaths[i];
     
     particles[i] = image;
-	console.log(i);
-	console.log(particlesReady);
-	console.log("\n");
 }
 
 var ready = false;
-
 
 // Animation
 var w = window;
@@ -191,7 +187,7 @@ function Engine(canvas) {
             for (var key in spritesReady) ready &= spritesReady[key];
             return;
         }
-        
+		        
         // Redraw the background.
         this.context.fillStyle = "#CCC";
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -231,7 +227,7 @@ function Engine(canvas) {
         
     // The main game loop.
     this.main = function() {
-        
+        		
         // Record timing.
         var now = Date.now();
         var delta = now - this.time;
