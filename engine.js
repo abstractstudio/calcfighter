@@ -35,9 +35,8 @@ var keymap = [
 	{left: 65, right: 68, up: 87, down: 83, shoot: 49, shield: 192},
 	{left: 37, right: 39, up: 38, down: 40, shoot: 220, shield: 221}
 ];
-var arrows = [37, 39, 38, 40];
 
-// Sprites.
+// Sprites and particles.
 var spritesPaths = {zero: "images/zero.png", infinity: "images/infinity.png", ddx: "images/ddx.png", intsmall: "images/intsmall.png", intlarge: "images/intlarge.png"}
 var spritesReady = {}
 var sprites = {};
@@ -51,6 +50,24 @@ for (var key in spritesPaths) {
     image.src = spritesPaths[key];
     
     sprites[key] = image;
+}
+
+var particlePaths = ["images/particle/0.png", "images/particle/1.png", "images/particle/2.png", "images/particle/3.png", "images/particle/4.png", "images/particle/5.png", "images/particle/6.png", "images/particle/7.png", "images/particle/8.png", "images/particle/9.png"];
+var particlesReady = [];
+var particles = [];
+
+for (var i = 0; i < particlePaths.length; i++) {
+	particlesReady[i] = false;
+	
+	var image = new Image();
+	image.key = i;
+    image.onload = function() { particlesReady[this.key] = true; }
+    image.src = particlePaths[i];
+    
+    particles[i] = image;
+	console.log(i);
+	console.log(particlesReady);
+	console.log("\n");
 }
 
 var ready = false;
@@ -91,8 +108,8 @@ function Engine(canvas) {
     ];
     this.bullets = [];
     this.players = {
-        zero: new Player("zero", sprites.zero, sprites.intlarge, keymap[0], this),
-        infinitus: new Player("infinitus", sprites.infinity, sprites.intsmall, keymap[1], this)
+        zero: new Player("zero", sprites.zero, sprites.intlarge, particles, keymap[0], this),
+        infinitus: new Player("infinitus", sprites.infinity, sprites.intsmall, particles, keymap[1], this)
     };
                 
     // Update the game.
@@ -202,13 +219,13 @@ function Engine(canvas) {
         this.context.textBaseline = "top";
         this.context.fillText(Math.round(F/(Date.now() - S) * 1000), 10, 10);
         
-        this.context.fillRect(10, this.canvas.height-40, 0.075*this.players.zero.shield, 3);
+        this.context.fillRect(10, this.canvas.height-40, 0.08*this.players.zero.shield, 3);
         this.context.textBaseline = "bottom"
-        this.context.fillText("Zero: " + this.players.zero.score, 10, this.canvas.height-10);
+        this.context.fillText("Captain Zero: " + this.players.zero.score, 10, this.canvas.height-10);
 
-        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.075*this.players.infinitus.shield, 3);
+        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.08*this.players.infinitus.shield, 3);
         this.context.textAlign = "right";
-        this.context.fillText("Infinity: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
+        this.context.fillText("Infinitus: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
 
     }
         

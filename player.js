@@ -1,5 +1,5 @@
 // Player data and computation model.
-function Player(name, image, intimage, bindings, engine) {
+function Player(name, image, intimage, particleImages, bindings, engine) {
     
     // Engine.
     this.engine = engine;
@@ -8,6 +8,11 @@ function Player(name, image, intimage, bindings, engine) {
     this.name = name;
     this.image = image;
     this.integral = intimage;
+	
+	// Particles.
+	this.particleImages = particleImages;
+	this.particles = [];
+	this.particlesActive = false;
     
     // Position and physics.
     this.x = 100;
@@ -16,6 +21,7 @@ function Player(name, image, intimage, bindings, engine) {
     this.yv = 0;
     this.jump = 0;
     this.jumpTime = 0;
+	this.movedDown = false;
     this.grounded = false;
     this.collisions = {};
     this.direction = -1;
@@ -55,7 +61,7 @@ function Player(name, image, intimage, bindings, engine) {
         var sign = this.xv > 0 ? 1 : -1;
         this.xv = sign * Math.max(Math.abs(this.xv) - XV_FRICTION, 0);
         if (Math.abs(this.xv) > XV_TERMINAL) this.xv = sign * XV_TERMINAL;
-        
+		
         // Jumping.
         if (this.jump < JUMP_MAX && Date.now() - this.jumpTime > JUMP_COOLDOWN && this.bindings.up in keys) {
             this.grounded = false;
@@ -99,9 +105,20 @@ function Player(name, image, intimage, bindings, engine) {
         } else {
         	this.shielded = false;
         }
+		
+		// Update particles.
+		if (this.particlesActive) {
+			this.particlesActive = false;
+			for (var i = 0; i < particles.length; i++) {
+				this.particles[i].update();
+				if (this.particles[i].active) {
+					this.particlesActive = true;
+				}
+			}
+		}
             
         // Make sure the shield is at a sensible value.
-        this.shield = Math.max(this.shield, 0)
+        this.shield = Math.max(this.shield, 0);
     
     }
     
@@ -110,6 +127,8 @@ function Player(name, image, intimage, bindings, engine) {
         // Draw the image.
         if (this.invincible() && Date.now() % 500 < 150) return;
         context.drawImage(this.image, this.x, this.y);
+		
+		// Draw shield
         if (this.shielded) {
             context.drawImage(this.integral, this.x - this.integral.width, this.y + this.image.height / 2 - this.integral.height / 2);
             context.drawImage(this.integral, this.x + this.image.width, this.y + this.image.height / 2 - this.integral.height / 2);
@@ -126,6 +145,13 @@ function Player(name, image, intimage, bindings, engine) {
             context.lineTo(cx, cy-3);
             context.fill();
         }
+		
+		// Draw particles
+		if (this.particlesActive) {
+			for (var i = 0; i < particles.length; i++) {
+				this.particles[i].render();
+			}
+		}
         
     }
 
@@ -140,10 +166,15 @@ function Player(name, image, intimage, bindings, engine) {
         
         // Reload shield.
         this.shield = SHIELD_TIME;
+		
+		// Spawn particles.
+		for (var i = 0; i < particleImages.length; i++) {
+			this.particles[i] = new Particle(i, particleImages[i], this, this.engine);
+		}
+		this.particlesActive = true;
 
         // Spawn randomly.
         this.x = Math.random() * this.engine.canvas.width;
-
     }
 
     this.invincible = function() {
