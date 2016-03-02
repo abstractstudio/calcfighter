@@ -12,7 +12,6 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
 	// Particles.
 	this.particleImages = particleImages;
 	this.particles = [];
-	this.particlesActive = false;
     
     // Position and physics.
     this.x = 100;
@@ -105,18 +104,15 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         } else {
         	this.shielded = false;
         }
+        
+        
+        // Update particles.
+        for (var i = 0; i < this.particles.length; i++) {
+            this.particles[i].update(delta);
+        }
 		
-		// Update particles.
-		if (this.particlesActive) {
-			this.particlesActive = false;
-			for (var i = 0; i < particles.length; i++) {
-				this.particles[i].update(delta);
-				if (this.particles[i].active) {
-					this.particlesActive = true;
-				}
-			}
-		}
-        //console.log(this.particlesActive);
+        console.log(this.particles.length);
+        
         // Make sure the shield is at a sensible value.
         this.shield = Math.max(this.shield, 0);
     
@@ -124,11 +120,9 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
     
     this.render = function(context) {
         // Draw particles
-		if (this.particlesActive) {
-			for (var i = 0; i < particles.length; i++) {
-				this.particles[i].render(context);
-			}
-		}
+        for (var i = 0; i < this.particles.length; i++) {
+            this.particles[i].render(context);
+        }
 		
         // Draw the image.
         if (this.invincible() && Date.now() % 500 < 150) return;
@@ -159,10 +153,9 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         this.deathTime = Date.now();
 		
 		// Spawn particles.
-		for (var i = 0; i < particleImages.length; i++) {
-			this.particles[i] = new Particle(i, particleImages[i], this, this.engine);
+		for (var i = 0; i < 10; i++) {
+			this.particles.push(new Particle(particleImages[i], this, this.engine));
 		}
-		this.particlesActive = true;
         
         // Set physics.
         this.y = 0;

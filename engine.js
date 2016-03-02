@@ -13,9 +13,9 @@ var JUMP_COOLDOWN = 400;
 var CLIP_THRESHOLD = 2;
 
 // Particle constants
-var PARTICLE_XV = 0.5;
-var PARTICLE_YV = 1;
-var PARTICLE_YV_TERMINAL = 0.1;
+var XV_PARTICLE = 0.5;
+var YV_PARTICLE = 1;
+var PARTICLE_TIMEOUT = 2000;
 
 // Player constants
 var MAX_BULLETS = 2;
