@@ -15,7 +15,7 @@ var CLIP_THRESHOLD = 2;
 // Particle constants
 var XV_PARTICLE = 0.5;
 var YV_PARTICLE = 1;
-var PARTICLE_TIMEOUT = 2000;
+var PARTICLE_TIMEOUT = 5000;
 
 // Player constants
 var MAX_BULLETS = 2;
@@ -112,6 +112,10 @@ function Engine(canvas) {
         zero: new Player("zero", sprites.zero, sprites.intlarge, particles, keymap[0], this),
         infinitus: new Player("infinitus", sprites.infinity, sprites.intsmall, particles, keymap[1], this)
     };
+    
+    this.players.zero.x = 100;
+    this.players.zero.direction = 1;
+    this.players.infinitus.x = this.canvas.width - 100 - this.players.infinitus.image.width;
                 
     // Update the game.
     this.update = function(delta) {

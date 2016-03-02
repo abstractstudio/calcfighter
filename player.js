@@ -14,8 +14,8 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
 	this.particles = [];
     
     // Position and physics.
-    this.x = 100;
-    this.y = 100;
+    this.x = 0;
+    this.y = 0;
     this.xv = 0;
     this.yv = 0;
     this.jump = 0;
@@ -146,6 +146,7 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         this.deathTime = Date.now();
 		
 		// Spawn particles.
+        this.particles = [];
 		for (var i = 0; i < 10; i++) this.particles.push(new Particle(particleImages[i], this, this.engine));
         
         // Set physics.
