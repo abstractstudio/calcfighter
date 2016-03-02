@@ -151,17 +151,26 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         this.particles = [];
         for (var i = 0; i < 10; i++) this.particles.push(new Particle(particleImages[i], this, this.engine));
         
-        // Set physics.
-        this.y = 0;
-        this.yv = 0;
-        
         // Reload shield.
         this.shield = SHIELD_TIME;
 
+		// Respawn the player.
+		this.respawn();
+
+    }
+
+	this.respawn = function() {
+	
+		// Set physics.
+		this.y = 0;
+		this.yv = 0;
+		this.xv = 0;
+		
         // Spawn randomly.
         var p = this.engine.platforms[Math.floor(Math.random() * this.engine.platforms.length)];
         this.x = p.x + Math.random() * p.w;
-    }
+        
+	}
 
     this.invincible = function() {
 

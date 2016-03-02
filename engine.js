@@ -23,6 +23,8 @@ var BULLET_COOLDOWN = 200;
 var INVINCIBILITY_TIME = 2000;
 var SHIELD_TIME = 2000;
 
+var MAP_TIME = 500;
+
 // Platform constants.
 PLATFORM_THICKNESS = 4;
 
@@ -109,24 +111,46 @@ function Engine(canvas) {
     addEventListener("keyup", function(e) { delete keys[e.keyCode]; }, false);
 
     // Game objects.
-    this.platforms = [
-        new Platform((canvas.width - 400)/2, canvas.height * 13/20, 400, PLATFORM_THICKNESS), 
-		new Platform((canvas.width - 650)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS), 
-		new Platform((canvas.width + 350)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS),
-        new Platform((canvas.width - 50)/2, canvas.height * 17/20, 50, PLATFORM_THICKNESS)
-    ];
+    this.map = 1;
+	this.maps = [
+		{
+			platforms: [
+				new Platform((canvas.width - 400)/2, canvas.height * 13/20, 400, PLATFORM_THICKNESS), 
+				new Platform((canvas.width - 650)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS), 
+				new Platform((canvas.width + 350)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS),
+				new Platform((canvas.width - 50)/2, canvas.height * 17/20, 50, PLATFORM_THICKNESS)
+			],
+			spawns: {
+				zero: 100,
+				infinitus: canvas.width - 100
+			}
+		},
+		{
+			platforms: [
+				new Platform((canvas.width - 50)/2, canvas.height * 1/2, 50, PLATFORM_THICKNESS)
+			],
+			spawns: {
+				zero: canvas.width / 2,
+				infinitus: canvas.width / 2
+			}
+		}
+	];
+	this.mapTime = 0;
+    
     this.bullets = [];
     this.players = {
         zero: new Player("zero", sprites.zero, sprites.intlarge, particles, keymap[0], this),
         infinitus: new Player("infinitus", sprites.infinity, sprites.intsmall, particles, keymap[1], this)
     };
-    
+        
     this.players.zero.x = 100;
     this.players.zero.direction = 1;
     this.players.infinitus.x = this.canvas.width - 100 - this.players.infinitus.image.width;
                 
     // Update the game.
     this.update = function(delta) {
+    
+    	if (77 in keys) { this.setMap(this.map+1); }
  
         // Update the players
         for (var name in this.players) this.players[name].update(delta);
@@ -240,6 +264,9 @@ function Engine(canvas) {
         this.context.textAlign = "right";
         this.context.fillText("Infinitus: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
 
+        this.context.textBaseline = "top";
+		this.context.fillText("Map: " + (this.map+1), this.canvas.width-10, 10);
+
     }
         
     // The main game loop.
@@ -281,6 +308,7 @@ function Engine(canvas) {
     // Wait for resources before going to main.
     this.start = function() {
         S = Date.now();
+		this.setMap(0);
         this.main(); 
     }
     
@@ -288,6 +316,20 @@ function Engine(canvas) {
     this.dieBullet = function(index) {
         this.bullets[index].player.bullet++;
         this.bullets.splice(index, 1);
+    }
+    
+    this.setMap = function(index) {
+    	if (Date.now() - this.mapTime < MAP_TIME) return;
+    	
+    	this.map = index % this.maps.length;
+    	console.log(this.map);
+    	
+    	this.platforms = this.maps[this.map].platforms;
+    	this.players.zero.respawn();
+    	this.players.infinitus.respawn();
+    	this.players.zero.x = this.maps[this.map].spawns.zero - this.players.zero.image.width / 2;
+    	this.players.infinitus.x = this.maps[this.map].spawns.infinitus - this.players.infinitus.image.width / 2;
+    	this.mapTime = Date.now();
     }
     
 }
