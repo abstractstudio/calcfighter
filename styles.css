@@ -19,6 +19,8 @@ canvas {
     margin-right: 3em;
 }
 
+#information { margin-top: 4em; }
+
 #information ul {
     margin-top: 0.5em;
 }
