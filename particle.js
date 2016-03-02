@@ -17,8 +17,9 @@ function Particle(image, player, engine) {
 	this.xv = Math.cos(this.angle) * XV_PARTICLE;
 	this.yv = Math.sin(this.angle) * YV_PARTICLE;
 	
+    // Update the particles physics and remove if necessary.
 	this.update = function(delta) {
-        
+                
 		// Update position.
         this.yv += YV_GRAVITY;
 		if (Math.abs(this.yv) > YV_TERMINAL) this.yv = (this.yv > 0 ? 1 : -1) * YV_TERMINAL;
@@ -33,6 +34,7 @@ function Particle(image, player, engine) {
 		}
 	}
 	
+    // Render the particle.
 	this.render = function(context) {
 		context.drawImage(this.image, this.x, this.y);
 	}

@@ -46,6 +46,9 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
     // Update.
     this.update = function(delta) {
         
+        // Update particles.
+        for (var i = 0; i < this.particles.length; i++) this.particles[i].update(delta);
+        
         // Strafing.
         if (this.bindings.left in keys) {
             this.xv -= XV_ACCELERATION;
@@ -104,15 +107,7 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         } else {
         	this.shielded = false;
         }
-        
-        
-        // Update particles.
-        for (var i = 0; i < this.particles.length; i++) {
-            this.particles[i].update(delta);
-        }
-		
-        console.log(this.particles.length);
-        
+		        
         // Make sure the shield is at a sensible value.
         this.shield = Math.max(this.shield, 0);
     
@@ -120,9 +115,7 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
     
     this.render = function(context) {
         // Draw particles
-        for (var i = 0; i < this.particles.length; i++) {
-            this.particles[i].render(context);
-        }
+        for (var i = 0; i < this.particles.length; i++) this.particles[i].render(context);
 		
         // Draw the image.
         if (this.invincible() && Date.now() % 500 < 150) return;
@@ -153,9 +146,7 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         this.deathTime = Date.now();
 		
 		// Spawn particles.
-		for (var i = 0; i < 10; i++) {
-			this.particles.push(new Particle(particleImages[i], this, this.engine));
-		}
+		for (var i = 0; i < 10; i++) this.particles.push(new Particle(particleImages[i], this, this.engine));
         
         // Set physics.
         this.y = 0;
@@ -165,7 +156,8 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         this.shield = SHIELD_TIME;
 
         // Spawn randomly.
-        this.x = Math.random() * this.engine.canvas.width;
+        var p = this.engine.platforms[Math.floor(Math.random() * this.engine.platforms.length)];
+        this.x = p.x + Math.random() * p.w;
     }
 
     this.invincible = function() {
