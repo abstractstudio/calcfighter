@@ -17,7 +17,8 @@ function Particle(index, image, player, engine) {
 	
 	this.update = function(delta) {
 		// Update position.
-		this.yv = Math.max(this.yv + YV_GRAVITY, PARTICLE_YV_TERMINAL);
+        this.yv += YV_GRAVITY;
+		if (Math.abs(this.yv) > YV_TERMINAL) this.yv = (this.yv > 0 ? 1 : -1) * YV_TERMINAL;
 		this.x += this.xv * delta;
 		this.y += this.yv * delta;
 		

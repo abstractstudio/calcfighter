@@ -13,8 +13,8 @@ var JUMP_COOLDOWN = 400;
 var CLIP_THRESHOLD = 2;
 
 // Particle constants
-var PARTICLE_XV = 1;
-var PARTICLE_YV = 0.1;
+var PARTICLE_XV = 0.5;
+var PARTICLE_YV = 1;
 var PARTICLE_YV_TERMINAL = 0.1;
 
 // Player constants
