@@ -12,6 +12,11 @@ var JUMP_MAX = 2;
 var JUMP_COOLDOWN = 400;
 var CLIP_THRESHOLD = 2;
 
+// Particle constants
+var PARTICLE_XV = 1;
+var PARTICLE_YV = 0.1;
+var PARTICLE_YV_TERMINAL = 0.1;
+
 // Player constants
 var MAX_BULLETS = 2;
 var BULLET_COOLDOWN = 200;

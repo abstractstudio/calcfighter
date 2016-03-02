@@ -9,24 +9,26 @@ function Particle(index, image, player, engine) {
 	this.active = true;
 	
 	// Position and physics.
-	this.x = player.x;
-	this.y = player.y;
-	this.xv = Math.cos(Math.random() * 2 * Math.PI) * 5;
-	this.yv = -Math.sin(Math.random() * Math.PI) * 5;
+	this.x = this.player.x;
+	this.y = this.player.y;
+	this.angle = Math.random() * 2 * Math.PI
+	this.xv = Math.cos(this.angle) * PARTICLE_XV;
+	this.yv = Math.sin(this.angle) * PARTICLE_YV;
 	
 	this.update = function(delta) {
 		// Update position.
+		this.yv = Math.max(this.yv + YV_GRAVITY, PARTICLE_YV_TERMINAL);
 		this.x += this.xv * delta;
 		this.y += this.yv * delta;
 		
-		if (this.x + this.image.width < 0 || this.x > this.engine.width || this.y + this.image.height < 0 || this.x > this.engine.height) {
+		if (this.x + this.image.width < 0 || this.x > this.engine.canvas.width || this.y + this.image.height < 0 || this.x > this.engine.canvas.height) {
 			this.active = false;
 		}
 	}
 	
 	this.render = function(context) {
 		if (this.active) {
-			this.engine.context.drawImage(this.image, this.x, this.y);
+			context.drawImage(this.image, this.x, this.y);
 		}
 	}
 }

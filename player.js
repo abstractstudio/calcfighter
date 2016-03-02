@@ -110,20 +110,26 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
 		if (this.particlesActive) {
 			this.particlesActive = false;
 			for (var i = 0; i < particles.length; i++) {
-				this.particles[i].update();
+				this.particles[i].update(delta);
 				if (this.particles[i].active) {
 					this.particlesActive = true;
 				}
 			}
 		}
-            
+        //console.log(this.particlesActive);
         // Make sure the shield is at a sensible value.
         this.shield = Math.max(this.shield, 0);
     
     }
     
     this.render = function(context) {
-        
+        // Draw particles
+		if (this.particlesActive) {
+			for (var i = 0; i < particles.length; i++) {
+				this.particles[i].render(context);
+			}
+		}
+		
         // Draw the image.
         if (this.invincible() && Date.now() % 500 < 150) return;
         context.drawImage(this.image, this.x, this.y);
@@ -145,20 +151,18 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
             context.lineTo(cx, cy-3);
             context.fill();
         }
-		
-		// Draw particles
-		if (this.particlesActive) {
-			for (var i = 0; i < particles.length; i++) {
-				this.particles[i].render();
-			}
-		}
-        
     }
 
     this.die = function() {
         
         // Time of death.
         this.deathTime = Date.now();
+		
+		// Spawn particles.
+		for (var i = 0; i < particleImages.length; i++) {
+			this.particles[i] = new Particle(i, particleImages[i], this, this.engine);
+		}
+		this.particlesActive = true;
         
         // Set physics.
         this.y = 0;
@@ -166,12 +170,6 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
         
         // Reload shield.
         this.shield = SHIELD_TIME;
-		
-		// Spawn particles.
-		for (var i = 0; i < particleImages.length; i++) {
-			this.particles[i] = new Particle(i, particleImages[i], this, this.engine);
-		}
-		this.particlesActive = true;
 
         // Spawn randomly.
         this.x = Math.random() * this.engine.canvas.width;
