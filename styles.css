@@ -26,9 +26,9 @@ canvas {
 .column1, .column2 { width: 48%; display: block; }
 .column1 { text-align: right; float: left; }
 .column2 { text-align: left; float: right; }
-.clear { clear: both; padding-top: 1em; }
+.clear { clear: both; padding-top: 1em; text-align: center; }
 
-table { border: 0px; }
+table { border: 0px; width: 100%; }
 
 .column1 table { float: right; text-align: right; }
 .column1 table td:last-of-type, .column2 table td:first-of-type { width: 1.5em; }
