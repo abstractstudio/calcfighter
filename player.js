@@ -115,8 +115,10 @@ function Player(name, image, intimage, particleImages, bindings, engine) {
     
     this.render = function(context) {
         // Draw particles
-        for (var i = 0; i < this.particles.length; i++) this.particles[i].render(context);
-		
+        for (var i = 0; i < this.particles.length; i++) {
+            this.particles[i].render(context);
+        }
+
         // Draw the image.
         if (this.invincible() && Date.now() % 500 < 150) return;
         context.drawImage(this.image, this.x, this.y);

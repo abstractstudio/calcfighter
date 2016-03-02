@@ -32,6 +32,13 @@ var FPS_INTERVAL = 1000 / FPS_CAP;
 var F = 0;
 var S = 0;
 
+var units = [
+    "pole", "pound", "square meter", "second", "hour", "year", "decade", "mile", "stade", "acre", "dollar", "cookie", "frame", 
+    "cubic millimeter", "quartic cubit", "object", "coffee", "error", "failure", "mistake", "exception", "warning", "points",
+    "gallon", "ounce", "gram", "kilograms", "decibal", "tonne", "ton", "furlong", "fortnight", "firkin"
+];
+var unit = " " + units[Math.floor(Math.random()*units.length)] + "s/" + units[Math.floor(Math.random()*units.length)];
+
 window.onfocus = function() { F = 0; S = Date.now() ; }
 
 // Input.
@@ -105,7 +112,8 @@ function Engine(canvas) {
     this.platforms = [
         new Platform((canvas.width - 400)/2, canvas.height * 13/20, 400, PLATFORM_THICKNESS), 
 		new Platform((canvas.width - 650)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS), 
-		new Platform((canvas.width + 350)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS)
+		new Platform((canvas.width + 350)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS),
+        new Platform((canvas.width - 50)/2, canvas.height * 17/20, 50, PLATFORM_THICKNESS)
     ];
     this.bullets = [];
     this.players = {
@@ -222,13 +230,13 @@ function Engine(canvas) {
         
         this.context.textAlign = "left";
         this.context.textBaseline = "top";
-        this.context.fillText(Math.round(F/(Date.now() - S) * 1000), 10, 10);
+        this.context.fillText(Math.round(F/(Date.now() - S) * 1000) + unit, 10, 10);
         
-        this.context.fillRect(10, this.canvas.height-40, 0.08*this.players.zero.shield, 3);
+        this.context.fillRect(10, this.canvas.height-40, 0.1*this.players.zero.shield, 3);
         this.context.textBaseline = "bottom"
         this.context.fillText("Captain Zero: " + this.players.zero.score, 10, this.canvas.height-10);
 
-        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.08*this.players.infinitus.shield, 3);
+        this.context.fillRect(this.canvas.width-10, this.canvas.height-40, -0.1*this.players.infinitus.shield, 3);
         this.context.textAlign = "right";
         this.context.fillText("Infinitus: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
 
