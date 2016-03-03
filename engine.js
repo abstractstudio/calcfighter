@@ -118,22 +118,42 @@ function Engine(canvas) {
 				new Platform((canvas.width - 400)/2, canvas.height * 13/20, 400, PLATFORM_THICKNESS), 
 				new Platform((canvas.width - 650)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS), 
 				new Platform((canvas.width + 350)/2, canvas.height * 9/20, 150, PLATFORM_THICKNESS),
-				new Platform((canvas.width - 50)/2, canvas.height * 17/20, 50, PLATFORM_THICKNESS)
+				new Platform((canvas.width - 100)/2, canvas.height * 17/20, 100, PLATFORM_THICKNESS)
 			],
-			spawns: {
+            spawns: {
 				zero: 100,
 				infinitus: canvas.width - 100
 			}
 		},
 		{
 			platforms: [
-				new Platform((canvas.width - 50)/2, canvas.height * 1/2, 50, PLATFORM_THICKNESS)
+				new Platform((canvas.width - 20)/2, canvas.height * 9/20, 20, PLATFORM_THICKNESS)
 			],
 			spawns: {
 				zero: canvas.width / 2,
 				infinitus: canvas.width / 2
 			}
-		}
+		},
+        {
+            platforms: [
+                new Platform(canvas.width * 1/5, canvas.height * 9/20, canvas.width * 3/5, PLATFORM_THICKNESS)
+            ],
+            spawns: {
+                zero: canvas.width * 3/10,
+                infinitus: canvas.width * 7/10
+            }
+        },
+        {
+            platforms: [
+                new Platform(canvas.width * 2/5, canvas.height * 9/20, canvas.width * 1/5, PLATFORM_THICKNESS),
+                new Platform(canvas.width * 1/5, canvas.height * 13/20, canvas.width * 3/5, PLATFORM_THICKNESS),
+                new Platform(canvas.width * 2/5, canvas.height * 17/20, canvas.width * 1/5, PLATFORM_THICKNESS)
+            ],
+            spawns: {
+                zero: canvas.width * 3/10,
+                infinitus: canvas.width * 7/10
+            }
+        }
 	];
 	this.mapTime = 0;
     
@@ -265,7 +285,7 @@ function Engine(canvas) {
         this.context.fillText("Infinitus: " + this.players.infinitus.score, this.canvas.width-10, this.canvas.height-10);
 
         this.context.textBaseline = "top";
-		this.context.fillText("Map: " + (this.map+1), this.canvas.width-10, 10);
+		this.context.fillText("(m) Map " + (this.map+1), this.canvas.width-10, 10);
 
     }
         
@@ -322,7 +342,6 @@ function Engine(canvas) {
     	if (Date.now() - this.mapTime < MAP_TIME) return;
     	
     	this.map = index % this.maps.length;
-    	console.log(this.map);
     	
     	this.platforms = this.maps[this.map].platforms;
     	this.players.zero.respawn();
