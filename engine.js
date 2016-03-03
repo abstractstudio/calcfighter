@@ -36,7 +36,7 @@ var S = 0;
 
 var units = [
     "pole", "pound", "square meter", "second", "hour", "year", "decade", "mile", "stade", "acre", "dollar", "cookie", "frame", 
-    "cubic millimeter", "quartic cubit", "object", "coffee", "error", "failure", "mistake", "exception", "warning", "points",
+    "cubic millimeter", "quartic cubit", "object", "coffee", "error", "failure", "mistake", "exception", "warning", "point",
     "gallon", "ounce", "gram", "kilograms", "decibal", "tonne", "ton", "furlong", "fortnight", "firkin"
 ];
 var unit = " " + units[Math.floor(Math.random()*units.length)] + "s/" + units[Math.floor(Math.random()*units.length)];
